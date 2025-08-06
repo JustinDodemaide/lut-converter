@@ -70,7 +70,11 @@ def cube_to_png():
             y = g_index
 
             # add the color to the image
-            img.putpixel((x, y), (int(r * 255), int(g * 255), int(b * 255)))
+            img.putpixel((x, y), (
+                min(255, max(0, round(r * 255))), # clamps the value and is slightly more precise than casting to int
+                min(255, max(0, round(g * 255))),
+                min(255, max(0, round(b * 255)))
+            ))
 
             index += 1
 
@@ -141,11 +145,11 @@ def png_to_cube():
             b = pixel[2] / 255.0
 
             # Round to 6 decimal places and cast to string
-            r = str(round(r, 6))
-            g = str(round(g, 6))
-            b = str(round(b, 6))
+            r_str = f"{r:.6f}"
+            g_str = f"{g:.6f}"
+            b_str = f"{b:.6f}"
             
-            cube_content.append(r + " " + g + " " + b)
+            cube_content.append(r_str + " " + g_str + " " + b_str)
         
         # Join all lines into a single string
         cube_data = "\n".join(cube_content)
