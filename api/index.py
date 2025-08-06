@@ -88,3 +88,84 @@ def cube_to_png():
     
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+
+@app.route('/api/png-to-cube', methods=['POST'])
+def png_to_cube():
+    # make .cube file
+    # add header
+    # read the image pixel by pixel and do reverse math to add rgb values to the .cube file
+
+    # Check if the file was uploaded
+    if 'file' not in request.files:
+        return jsonify({"error": "No file part"}), 400
+
+    file = request.files['file']
+
+    if file.filename == '':
+        return jsonify({"error": "No file selected"}), 400
+    
+    try:
+        img = Image.open(file.stream)
+        width, height = img.size
+        
+        # height = LUT_3D_SIZE, width = LUT_3D_SIZE * LUT_3D_SIZE
+        lut_size = height
+        
+        if width != lut_size * lut_size:
+            return jsonify({"error": f"Expected width {lut_size * lut_size} for height {lut_size}"}), 400
+        
+
+        cube_content = []
+        # Add header
+        cube_content.append(f"LUT_3D_SIZE {lut_size}")
+        
+        # Make data section
+        # Each pixel maps to a line in the .cube file
+        for index in range(lut_size ** 3):
+            # Calculate index using reverse math
+            r_index = index % lut_size
+            g_index = (index // lut_size) % lut_size
+            b_index = index // (lut_size * lut_size)
+            
+            # Calculate pixel position
+            x = b_index * lut_size + r_index
+            y = g_index
+            
+            # Get pixel RGB values
+            pixel = img.getpixel((x, y))
+            
+            # Convert from int to float, 0-255 to 0.0-1.0
+            r = pixel[0] / 255.0
+            g = pixel[1] / 255.0
+            b = pixel[2] / 255.0
+
+            # Round to 6 decimal places and cast to string
+            r = str(round(r, 6))
+            g = str(round(g, 6))
+            b = str(round(b, 6))
+            
+            cube_content.append(r + " " + g + " " + b)
+        
+        # Join all lines into a single string
+        cube_data = "\n".join(cube_content)
+        
+        # Store the .cube data in memory so it can be sent as a response
+        cube_io = BytesIO()
+        cube_io.write(cube_data.encode('utf-8'))
+        cube_io.seek(0)
+        
+        return send_file(
+            cube_io, 
+            mimetype='text/plain',
+            as_attachment=True,
+            download_name='converted.cube'
+        )
+        
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/test', methods=['GET'])
+def test():
+    return jsonify("API is working!")

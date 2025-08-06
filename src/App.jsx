@@ -58,7 +58,7 @@ function App() {
     formData.append('file', file);
 
     try {
-      const response = await fetch(`/api/convert/${conversionMode}`, {
+      const response = await fetch(`/api/${conversionMode}`, {
         method: 'POST',
         body: formData,
       });
