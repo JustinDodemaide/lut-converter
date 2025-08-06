@@ -9,6 +9,8 @@ import { useDropzone } from 'react-dropzone';
 import { cn } from "@/lib/utils";
 import { UploadCloud } from 'lucide-react';
 
+import { AnimatePresence, motion } from 'framer-motion';
+import { File } from 'lucide-react';
 
 function App() {
   const [conversionMode, setConversionMode] = useState("cubeToPng");
@@ -17,6 +19,8 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
+
+  // Dropzone hooks
   const onDrop = useCallback((acceptedFiles) => {
     const selectedFile = acceptedFiles[0];
     if (selectedFile) {
@@ -34,6 +38,7 @@ function App() {
     },
     multiple: false,
   });
+  // End dropzone hooks
 
 
   return (
@@ -65,6 +70,30 @@ function App() {
                 </p>
                 <p className="text-sm text-muted-foreground/80">or click to browse</p>
               </div>
+
+              <AnimatePresence>
+                {file && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                  >
+                    <div className="mt-4 flex items-center justify-between p-3 text-sm border rounded-lg bg-muted/50">
+                      <div className="flex items-center gap-2 overflow-hidden">
+                        <File className="w-4 h-4 flex-shrink-0" />
+                        <span className="truncate">{file.name}</span>
+                      </div>
+                      <button
+                        onClick={() => setFile(null)}
+                        className="text-muted-foreground hover:text-foreground transition-colors"
+                      >
+                        &times;
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
             </CardContent>
           </Card>
         </TabsContent>
