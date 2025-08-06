@@ -61,16 +61,36 @@ function App() {
                 <input {...getInputProps()} />
                 <UploadCloud className="w-12 h-12 mb-4 text-muted-foreground" />
                 <p className="text-muted-foreground">
-                  {isDragActive ? "Drop the file here..." : `Drag & drop .cube file`}
+                  {isDragActive ? "Drop the file here..." : `Drag & drop a .cube file`}
                 </p>
                 <p className="text-sm text-muted-foreground/80">or click to browse</p>
               </div>
             </CardContent>
           </Card>
         </TabsContent>
-
         <TabsContent value="pngToCube">
-
+          <Card>
+            <CardHeader>
+              <CardTitle>Convert .CUBE to .PNG</CardTitle>
+              <CardDescription>Upload a .cube file to begin.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div
+                {...getRootProps()}
+                className={cn(
+                  "flex flex-col items-center justify-center p-8 text-center border-2 border-dashed rounded-lg cursor-pointer transition-colors",
+                  isDragActive ? "border-primary bg-muted" : "border-border hover:border-primary/50"
+                )}
+              >
+                <input {...getInputProps()} />
+                <UploadCloud className="w-12 h-12 mb-4 text-muted-foreground" />
+                <p className="text-muted-foreground">
+                  {isDragActive ? "Drop the file here..." : `Drag & drop a .png file`}
+                </p>
+                <p className="text-sm text-muted-foreground/80">or click to browse</p>
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
       </Tabs>
     </div>
