@@ -57,15 +57,26 @@ function App() {
     const formData = new FormData();
     formData.append('file', file);
 
-    try {
+// Inside the handleConvert function
+
+  try {
       const response = await fetch(`/api/${conversionMode}`, {
         method: 'POST',
         body: formData,
       });
 
       if (!response.ok) {
-        const errData = await response.json();
-        throw new Error(errData.error || `Error: ${response.statusText}`);
+        // Check if the error response is JSON before parsing
+        const contentType = response.headers.get("content-type");
+        let errorMessage;
+
+        if (contentType && contentType.indexOf("application/json") !== -1) {
+          const errData = await response.json();
+          errorMessage = errData.error || `Error: ${response.statusText}`;
+        } else {
+          errorMessage = `Server responded with ${response.status}: ${response.statusText}`;
+        }
+        throw new Error(errorMessage);
       }
 
       const blob = await response.blob();
